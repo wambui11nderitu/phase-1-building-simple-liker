@@ -1,25 +1,47 @@
-// Defining text characters for the empty and full hearts for you to use later.
-const EMPTY_HEART = '♡'
-const FULL_HEART = '♥'
+// main.js
 
-// Your JavaScript code goes here!
+document.addEventListener("DOMContentLoaded", function() {
+  const likeGlyph = document.getElementById("like-glyph");
+  const emptyHeart = document.querySelector(".like-glyph-empty");
+  const fullHeart = document.querySelector(".like-glyph-full");
+  const modal = document.getElementById("modal");
+  const modalMessage = document.querySelector(".modal-message");
 
+  modal.classList.add("hidden");
 
+  likeGlyph.addEventListener("click", function() {
+    mimicServerCall()
+      .then(() => {
+        emptyHeart.classList.add("hidden");
+        fullHeart.classList.remove("hidden", "activated-heart");
+        setTimeout(() => {
+          fullHeart.classList.add("hidden");
+        }, 3000);
+      })
+      .catch(() => {
+        modalMessage.textContent = "Error: Server request failed.";
+        modal.classList.remove("hidden");
+        setTimeout(() => {
+          modal.classList.add("hidden");
+        }, 3000);
+      });
+  });
 
+  fullHeart.addEventListener("click", function() {
+    emptyHeart.classList.remove("hidden");
+    fullHeart.classList.add("hidden", "activated-heart");
+  });
+});
 
-//------------------------------------------------------------------------------
-// Don't change the code below: this function mocks the server response
-//------------------------------------------------------------------------------
-
-function mimicServerCall(url="http://mimicServer.example.com", config={}) {
-  return new Promise(function(resolve, reject) {
-    setTimeout(function() {
-      let isRandomFailure = Math.random() < .2
-      if (isRandomFailure) {
-        reject("Random server error. Try again.");
+function mimicServerCall() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const success = Math.random() < 0.5;
+      if (success) {
+        resolve("Success");
       } else {
-        resolve("Pretend remote server notified of action!");
+        reject("Error");
       }
-    }, 300);
+    }, 1000);
   });
 }
